@@ -1,38 +1,42 @@
-public class UserService
+using NotificationWebsite.Data;
+
+
+namespace NotificationWebsite.Services
 {
-    private readonly WebDbContext _context = default!;
-
-    public UserService(WebDbContext context)
+    public class UserService
     {
-        _context = context;
-    }
+        private readonly WebDbContext _context = default!;
 
-    public IList<User> GetUsers()
-    {
-        if (_context.Users != null)
+        public UserService(WebDbContext context)
         {
-            return _context.Users.ToList();
+            _context = context;
         }
-        return new List<User>();
-    }
 
-
-    public string AddUser(User user)
-    {
-        if (_context.Users != null)
+        public IList<User> GetUsers()
         {
-            if (_context.Users.Any(u => u.Email == user.Email))
+            if (_context.Users != null)
             {
-                return "This email is already subscribed";
+                return _context.Users.ToList();
             }
-            _context.Users.Add(user);
-            _context.SaveChanges();
-            return "Email was successfully signed";
+            return new List<User>();
         }
 
-        return "Database access error";
+
+        public string AddUser(User user)
+        {
+            if (_context.Users != null)
+            {
+                if (_context.Users.Any(u => u.Email == user.Email))
+                {
+                    return "This email is already subscribed";
+                }
+                _context.Users.Add(user);
+                _context.SaveChanges();
+                return "Email was successfully signed";
+            }
+
+            return "Database access error";
+        }
+
     }
-
-    // уведомить пользователей?
-
 }

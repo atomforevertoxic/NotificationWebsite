@@ -7,11 +7,11 @@ public class User
 
     [Required]
     [MaxLength(20)]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [Required]
     [EmailAddress]
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
     [Required]
     [Range(18, 100)]

@@ -1,11 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 
-public class WebDbContext : DbContext
+namespace NotificationWebsite.Data
 {
-    public WebDbContext(DbContextOptions<WebDbContext> options) : base(options)
+    public class WebDbContext : DbContext
     {
+        public WebDbContext(DbContextOptions<WebDbContext> options) : base(options)
+        {
 
+        }
+
+        public DbSet<User>? Users { get; set; }
     }
-
-    public DbSet<User>? Users { get; set; }
 }
