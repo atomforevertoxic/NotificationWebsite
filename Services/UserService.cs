@@ -3,6 +3,15 @@ using NotificationWebsite.Models;
 
 namespace NotificationWebsite.Services
 {
+
+    public enum ServiceState
+    {
+        Success,
+        DuplicateMailError,
+        DatabaseAccessError,
+        OtherError
+    }
+
     public class UserService
     {
         private readonly WebDbContext _context = default!;
@@ -22,20 +31,22 @@ namespace NotificationWebsite.Services
         }
 
 
-        public string AddUser(User user)
+        public ServiceState AddUser(User user)
         {
             if (_context.Users != null)
             {
                 if (_context.Users.Any(u => u.Email == user.Email))
                 {
-                    return "This email is already subscribed";
+                    return ServiceState.DuplicateMailError;
                 }
+
                 _context.Users.Add(user);
                 _context.SaveChanges();
-                return "Email was successfully signed";
+
+                return ServiceState.Success;
             }
 
-            return "Database access error";
+            return ServiceState.DatabaseAccessError;
         }
 
     }

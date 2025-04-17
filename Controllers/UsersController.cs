@@ -30,13 +30,35 @@ namespace NotificationWebsite.Controllers
 
             //если время не устанавливается, перезапусти сервер
             NewUser.Timestamp = DateTime.UtcNow; //время UTC т.к. нам важна лишь разница во времени
-
-            TempData["SuccessSubscribing"] = "User was successfully registered";
             
-            _userService.AddUser(NewUser);
+            ServiceState serviceRespond = _userService.AddUser(NewUser);
+            HandleServiceRespond(serviceRespond);
+
             return Redirect("/");
         }
 
+        private void HandleServiceRespond(ServiceState respond)
+        {
+            switch(respond)
+            {
+                case ServiceState.Success:
+                    TempData["SuccessSubscription"] = "The user was successfully subscribed";
+                    break;
+
+                case ServiceState.DuplicateMailError:
+                    TempData["ErrorSubscription"] = "The user with this email is already subscribed";
+                    break;
+
+                case ServiceState.DatabaseAccessError:
+                    TempData["ErrorSubscription"] = "Database access error";
+                    break;
+
+                case ServiceState.OtherError:
+                    TempData["ErrorSubscription"] = "An unknown error occurred while subscribing the user";
+                    break;
+
+            }
+        }
 
         [HttpGet]
         public IActionResult GetUsers()

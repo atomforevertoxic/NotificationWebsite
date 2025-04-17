@@ -30,10 +30,16 @@
             <span asp-validation-for="Age" class="text-danger"></span>
         </div>
 
-        @if (TempData["SuccessSubscribing"] != null)
+        @if (TempData["SuccessSubscription"] != null)
         {
             <div class="alert alert-success">
-                @TempData["SuccessSubscribing"]
+                @TempData["SuccessSubscription"]
+            </div>
+        }
+        @if (TempData["ErrorSubscription"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorSubscription"]
             </div>
         }
 
