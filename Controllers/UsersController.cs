@@ -6,7 +6,7 @@ namespace NotificationWebsite.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : Controller
     {
         private readonly UserService _userService;
         public User NewUser { get; set; } = default!;
@@ -28,7 +28,11 @@ namespace NotificationWebsite.Controllers
                 return ValidationProblem(ModelState);
             }
 
+            //если время не устанавливается, перезапусти сервер
             NewUser.Timestamp = DateTime.UtcNow; //время UTC т.к. нам важна лишь разница во времени
+
+            TempData["SuccessSubscribing"] = "User was successfully registered";
+            
             _userService.AddUser(NewUser);
             return Redirect("/");
         }
