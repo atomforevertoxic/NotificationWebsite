@@ -1,5 +1,5 @@
 using NotificationWebsite.Data;
-
+using NotificationWebsite.Models;
 
 namespace NotificationWebsite.Services
 {

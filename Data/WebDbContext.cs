@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NotificationWebsite.Models;
 
 namespace NotificationWebsite.Data
 {

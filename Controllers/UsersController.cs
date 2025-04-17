@@ -1,38 +1,44 @@
 using Microsoft.AspNetCore.Mvc;
 using NotificationWebsite.Services;
+using NotificationWebsite.Models;
 
-[Route("api/[controller]")]
-[ApiController]
-public class UsersController: ControllerBase
+namespace NotificationWebsite.Controllers
 {
-    private readonly UserService _userService;
-    public User NewUser { get; set; } = default!;
-
-    public UsersController(UserService userService)
+    [Route("api/users")]
+    [ApiController]
+    public class UsersController : ControllerBase
     {
-        _userService = userService;
-    }
+        private readonly UserService _userService;
+        public User NewUser { get; set; } = default!;
 
+        public IList<User> Users { get; set; } = default!;
 
-    [HttpPost]
-    public IActionResult CreateUser([FromBody] User user)
-    {
-        //if (!ModelState.IsValid || newUser == null)
-        //{
-        //    return BadRequest(ModelState);
-        //}
-
-        //newUser.Timestamp = DateTime.UtcNow;
-        //_userService.AddUser(newUser);
-
-        //return CreatedAtAction("...", new { email = newUser.Email }, newUser);
-
-        if (user == null)
+        public UsersController(UserService userService)
         {
-            return BadRequest("Invalid user data");
+            _userService = userService;
         }
 
-        return CreatedAtAction("....", new { id = user.Id }, user);
-    }
 
+        [HttpPost]
+        public IActionResult CreateUser([FromForm] User NewUser)
+        {
+
+            if (!ModelState.IsValid) //не уверен что эта проверка нужна т.к. форма уже валидируется...
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            NewUser.Timestamp = DateTime.UtcNow; //время UTC т.к. нам важна лишь разница во времени
+            _userService.AddUser(NewUser);
+            return Redirect("/");
+        }
+
+
+        [HttpGet]
+        public IActionResult GetUsers()
+        {
+            Users = _userService.GetUsers();
+            return Ok(Users);
+        }
+    }
 }
