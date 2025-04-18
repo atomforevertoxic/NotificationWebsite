@@ -16,9 +16,12 @@ namespace NotificationWebsite.Services
     {
         private readonly WebDbContext _context = default!;
 
-        public UserService(WebDbContext context)
+        private readonly EmailService _emailService = default!;
+
+        public UserService(WebDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public IList<User> GetUsers()
@@ -39,6 +42,7 @@ namespace NotificationWebsite.Services
                 {
                     return ServiceState.DuplicateMailError;
                 }
+
 
                 _context.Users.Add(user);
                 _context.SaveChanges();

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using NotificationWebsite.Services;
 using NotificationWebsite.Models;
+using System.Security.AccessControl;
+using NotificationWebsite.Data;
 
 namespace NotificationWebsite.Controllers
 {
@@ -9,13 +11,15 @@ namespace NotificationWebsite.Controllers
     public class UsersController : Controller
     {
         private readonly UserService _userService;
+        private readonly EmailService _emailService;
         public User NewUser { get; set; } = default!;
 
         public IList<User> Users { get; set; } = default!;
 
-        public UsersController(UserService userService)
+        public UsersController(UserService userService, EmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
         }
 
 
@@ -33,6 +37,7 @@ namespace NotificationWebsite.Controllers
             
             ServiceState serviceRespond = _userService.AddUser(NewUser);
             HandleServiceRespond(serviceRespond);
+            SendEmail(NewUser.Email);
 
             return Redirect("/");
         }
@@ -42,7 +47,7 @@ namespace NotificationWebsite.Controllers
             switch(respond)
             {
                 case ServiceState.Success:
-                    TempData["SuccessSubscription"] = "The user was successfully subscribed";
+                    TempData["SuccessSubscription"] += "The user was successfully subscribed";
                     break;
 
                 case ServiceState.DuplicateMailError:
@@ -59,6 +64,17 @@ namespace NotificationWebsite.Controllers
 
             }
         }
+
+
+        public void SendEmail(string emailAddress)
+        {
+            var EmailTitle = "FluentTest";
+            var EmailBody = "Test body";
+            EmailMetadata metadata = new(emailAddress, EmailTitle, EmailBody, "");
+            _emailService.Send(metadata);
+            
+        }
+
 
         [HttpGet]
         public IActionResult GetUsers()
