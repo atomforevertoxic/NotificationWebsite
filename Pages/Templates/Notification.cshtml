@@ -1,0 +1,8 @@
+﻿@using System
+@model NotificationWebsite.Models.User
+
+<body>
+    <h1>Информируем вас, @Model.Name!</h1>
+    <p>Прошло время после создания пользователя:@(DateTime.UtcNow - Model.Timestamp)</p>
+    <img src="https://http.dog/200.jpg" alt="dog_200state_code" width="600" height="480" />
+</body>

@@ -37,7 +37,8 @@ namespace NotificationWebsite.Controllers
             
             ServiceState serviceRespond = _userService.AddUser(NewUser);
             HandleServiceRespond(serviceRespond);
-            SendEmail(NewUser.Email);
+
+            //_emailService.SendWelcomeEmail(NewUser);
 
             return Redirect("/");
         }
@@ -63,16 +64,6 @@ namespace NotificationWebsite.Controllers
                     break;
 
             }
-        }
-
-
-        public void SendEmail(string emailAddress)
-        {
-            var EmailTitle = "FluentTest";
-            var EmailBody = "Test body";
-            EmailMetadata metadata = new(emailAddress, EmailTitle, EmailBody, "");
-            _emailService.Send(metadata);
-            
         }
 
 

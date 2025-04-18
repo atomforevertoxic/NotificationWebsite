@@ -1,5 +1,6 @@
 ﻿using FluentEmail.Core;
 using NotificationWebsite.Data;
+using NotificationWebsite.Models;
 
 namespace NotificationWebsite.Services
 {
@@ -10,14 +11,6 @@ namespace NotificationWebsite.Services
         public EmailService(IFluentEmail email)
         {
             _fluentEmail = email;
-        }
-
-        public void Send(EmailMetadata metadata)
-        {
-            _fluentEmail.To(metadata.ToAddress)
-                .Subject(metadata.Subject)
-                .Body(metadata.Body)
-                .Send();
         }
     }
 }

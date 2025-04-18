@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NotificationWebsite.Data;
 using NotificationWebsite.Services;
-using NotificationWebsite.Extensions;
 using System.Net;
 using System.Net.Mail;
 
@@ -24,14 +23,13 @@ builder.Services.AddScoped<UserService>();
 var configuration = builder.Configuration;
 var emailSettings = configuration.GetSection("EmailSettings");
 
-var defaultFromEmail = emailSettings["DefaultFromEmail"];
-var host = emailSettings["SMTPSettings:Host"];
-var port = emailSettings.GetValue<int>("Port");
-var userName = emailSettings["UserName"];
-var password = emailSettings["Password"];
 
-builder.Services.AddFluentEmail(defaultFromEmail)
-    .AddSmtpSender(host, port, userName, password)
+builder.Services.AddFluentEmail(emailSettings["DefaultFromEmail"])
+    .AddSmtpSender(
+        emailSettings["SMTPSettings:Host"],
+        emailSettings.GetValue<int>("Port"),
+        emailSettings["UserName"],
+        emailSettings["Password"])
     .AddRazorRenderer();
 
 
