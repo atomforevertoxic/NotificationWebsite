@@ -47,6 +47,8 @@ namespace NotificationWebsite.Services
                 _context.Users.Add(user);
                 _context.SaveChanges();
 
+                _emailService.SendWelcomeEmail(user);
+
                 return ServiceState.Success;
             }
 

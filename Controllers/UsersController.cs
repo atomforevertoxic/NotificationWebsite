@@ -38,8 +38,6 @@ namespace NotificationWebsite.Controllers
             ServiceState serviceRespond = _userService.AddUser(NewUser);
             HandleServiceRespond(serviceRespond);
 
-            //_emailService.SendWelcomeEmail(NewUser);
-
             return Redirect("/");
         }
 

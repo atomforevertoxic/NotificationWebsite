@@ -12,5 +12,15 @@ namespace NotificationWebsite.Services
         {
             _fluentEmail = email;
         }
+
+        public void SendWelcomeEmail(User receiver)
+        {
+
+            var EmailTemplate = $"{Directory.GetCurrentDirectory()}/Pages/Templates/Greeting.cshtml";
+            _fluentEmail.To(receiver.Email)
+                .Subject("Welcome!")
+                .UsingTemplateFromFile(EmailTemplate, receiver)
+                .Send();
+        }
     }
 }
