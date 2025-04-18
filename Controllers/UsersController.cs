@@ -11,15 +11,13 @@ namespace NotificationWebsite.Controllers
     public class UsersController : Controller
     {
         private readonly UserService _userService;
-        private readonly EmailService _emailService;
         public User NewUser { get; set; } = default!;
 
         public IList<User> Users { get; set; } = default!;
 
-        public UsersController(UserService userService, EmailService emailService)
+        public UsersController(UserService userService)
         {
             _userService = userService;
-            _emailService = emailService;
         }
 
 

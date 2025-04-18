@@ -1,4 +1,6 @@
 using FluentEmail.Smtp;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NotificationWebsite.Data;
@@ -17,6 +19,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<WebDbContext>(options =>
     options.UseInMemoryDatabase("WebsiteDb"));
+
+builder.Services.AddHangfire(config => config.UseMemoryStorage());
+builder.Services.AddHangfireServer();
 
 builder.Services.AddScoped<UserService>();
 
@@ -48,6 +53,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
+app.UseHangfireDashboard();
 
 app.MapControllers(); 
 app.MapRazorPages();  

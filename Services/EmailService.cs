@@ -22,5 +22,14 @@ namespace NotificationWebsite.Services
                 .UsingTemplateFromFile(EmailTemplate, receiver)
                 .Send();
         }
+
+        public void SendReminderEmail(User receiver)
+        {
+            var EmailTemplate = $"{Directory.GetCurrentDirectory()}/Pages/Templates/Notification.cshtml";
+            _fluentEmail.To(receiver.Email)
+                .Subject("Welcome!")
+                .UsingTemplateFromFile(EmailTemplate, receiver)
+                .Send();
+        }
     }
 }

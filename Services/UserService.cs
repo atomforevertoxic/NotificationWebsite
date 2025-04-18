@@ -1,5 +1,6 @@
 using NotificationWebsite.Data;
 using NotificationWebsite.Models;
+using Hangfire;
 
 namespace NotificationWebsite.Services
 {
@@ -49,10 +50,20 @@ namespace NotificationWebsite.Services
 
                 _emailService.SendWelcomeEmail(user);
 
+                ScheduleNotifications(user);
+
+
                 return ServiceState.Success;
             }
 
             return ServiceState.DatabaseAccessError;
+        }
+
+        private void ScheduleNotifications(User receiver)
+        {
+            RecurringJob.AddOrUpdate($"SendNotification_{receiver.Id}",
+                () => _emailService.SendReminderEmail(receiver),
+                "* * * * *");
         }
 
     }
