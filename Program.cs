@@ -40,6 +40,11 @@ builder.Services.AddFluentEmail(emailSettings["DefaultFromEmail"])
 
 builder.Services.AddTransient<EmailService>();
 
+
+builder.Services.Configure<NotificationSettings>
+    (configuration.GetSection("NotificationEmailSettings"));
+
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

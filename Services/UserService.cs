@@ -1,6 +1,7 @@
 using NotificationWebsite.Data;
 using NotificationWebsite.Models;
 using Hangfire;
+using Microsoft.Extensions.Options;
 
 namespace NotificationWebsite.Services
 {
@@ -19,10 +20,13 @@ namespace NotificationWebsite.Services
 
         private readonly EmailService _emailService = default!;
 
-        public UserService(WebDbContext context, EmailService emailService)
+        private readonly NotificationSettings _notificationSettings;
+
+        public UserService(WebDbContext context, EmailService emailService, IOptions<NotificationSettings> notificationSettings)
         {
             _context = context;
             _emailService = emailService;
+            _notificationSettings = notificationSettings.Value;
         }
 
         public IList<User> GetUsers()
@@ -48,9 +52,14 @@ namespace NotificationWebsite.Services
                 _context.Users.Add(user);
                 _context.SaveChanges();
 
-                _emailService.SendWelcomeEmail(user);
 
-                ScheduleNotifications(user);
+                if (GetUsers().Count==1)
+                {
+                    ScheduleNotifications();
+                }
+
+                //добавить обработчик ошибок
+                _emailService.SendTemplateEmail(user, "Welcome", _notificationSettings.GreetTemplate);
 
 
                 return ServiceState.Success;
@@ -59,10 +68,11 @@ namespace NotificationWebsite.Services
             return ServiceState.DatabaseAccessError;
         }
 
-        private void ScheduleNotifications(User receiver)
+        private void ScheduleNotifications()
         {
-            RecurringJob.AddOrUpdate($"SendNotification_{receiver.Id}",
-                () => _emailService.SendReminderEmail(receiver),
+            //добавить обработчик ошибок
+            RecurringJob.AddOrUpdate("Notification",
+                () => _emailService.NotifySubscribers(GetUsers()),
                 "* * * * *");
         }
 
