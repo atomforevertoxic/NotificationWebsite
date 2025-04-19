@@ -68,6 +68,14 @@ namespace NotificationWebsite.Services
             return ServiceState.DatabaseAccessError;
         }
 
+        public User? GetUserById(int id)
+        {
+            if (_context == null) return null;
+            else if (_context.Users == null || _context.Users.Count() == 0) return null;
+
+            return _context?.Users?.FirstOrDefault(user => user.Id == id);
+        }
+
         private void ScheduleNotifications()
         {
             //добавить обработчик ошибок
@@ -76,5 +84,12 @@ namespace NotificationWebsite.Services
                 "* * * * *");
         }
 
+        public void InstantNotify(User receiver)
+        {
+            _emailService.SendTemplateEmail(
+                receiver, 
+                "Notify",
+                _notificationSettings.RemindTemplate);
+        }
     }
 }

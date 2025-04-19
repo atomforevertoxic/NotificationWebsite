@@ -3,6 +3,8 @@ using NotificationWebsite.Services;
 using NotificationWebsite.Models;
 using System.Security.AccessControl;
 using NotificationWebsite.Data;
+using System.Net.Http;
+using System.Net.Mail;
 
 namespace NotificationWebsite.Controllers
 {
@@ -11,6 +13,7 @@ namespace NotificationWebsite.Controllers
     public class UsersController : Controller
     {
         private readonly UserService _userService;
+        
         public User NewUser { get; set; } = default!;
 
         public IList<User> Users { get; set; } = default!;
@@ -66,8 +69,28 @@ namespace NotificationWebsite.Controllers
         [HttpGet]
         public IActionResult GetUsers()
         {
-            Users = _userService.GetUsers();
-            return Ok(Users);
+            IList<User> users = _userService.GetUsers();
+            if (users == null || users.Count == 0)
+            {
+                return NotFound("No users found");
+            }
+            return Ok(users);
+        }
+
+
+        [HttpPost("{id}/email")]
+        public IActionResult SendEmailInstantly(int id)
+        {
+
+            var user = _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound($"User with ID {id} not found.");
+            }
+
+            _userService.InstantNotify(user);
+
+            return Redirect("/");
         }
     }
 }
