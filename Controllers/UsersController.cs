@@ -96,7 +96,7 @@ namespace NotificationWebsite.Controllers
             var user = await _userService.GetUserById(id);
             if (user == null)
             {
-                TempData["ErrorInstantNotify"] = $"User with ID {id} not found";
+                TempData["ErrorInstantNotify"] = $"User with ID = ({id}) not found";
                 return Redirect("/");
             }
 

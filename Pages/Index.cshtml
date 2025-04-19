@@ -6,27 +6,29 @@
 
 <div class="container mt-5">
     <div class="text-center mb-4">
-        <h3>Notification Subscribing</h3>
+        <h3 class="display-4">Notification Subscription</h3>
     </div>
-    <form method="post" asp-controller="Users" asp-action="CreateUser" class="w-50 mx-auto">
-        
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-4 mb-1"></div>
 
-        <div class="form-group mb-2">
-            <label asp-for="Name" class="control-label fw-bold mb-1"></label>
-            <input asp-for="Name" class="form-control mb-1" />
+    <form method="post" asp-controller="Users" asp-action="CreateUser" class="w-75 mx-auto shadow p-4 bg-light rounded">
+        <h4 class="mb-4">Subscribe to Notifications</h4>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="control-label fw-bold"></label>
+            <input asp-for="Name" class="form-control" placeholder="John Doe" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <div class="form-group mb-2">
-            <label asp-for="Email" class="control-label fw-bold mb-1"></label>
-            <input asp-for="Email" class="form-control mb-1" />
+        <div class="form-group mb-3">
+            <label asp-for="Email" class="control-label fw-bold"></label>
+            <input asp-for="Email" class="form-control" placeholder="example@example.com" />
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
-        <div class="form-group mb-2">
-            <label asp-for="Age" class="control-label fw-bold mb-1"></label>
-            <input asp-for="Age" class="form-control mb-1" />
+        <div class="form-group mb-4">
+            <label asp-for="Age" class="control-label fw-bold"></label>
+            <input asp-for="Age" class="form-control" type="number" min="1" placeholder="from 18 to 100" />
             <span asp-validation-for="Age" class="text-danger"></span>
         </div>
 
@@ -44,16 +46,16 @@
         }
 
         <div class="form-group">
-            <input type="submit" value="Subscribe" class="btn btn-primary btn-block mt-1" /> 
+            <input type="submit" value="Subscribe" class="btn btn-primary btn-block mt-2" />
         </div>
     </form>
 
     <div class="text-center my-5">
-        <h3>Send Instant Email Notification</h3>
-        <form id="sendEmailForm" method="post" onsubmit="setAction(event)">
-            <div class="form-group mb-2">
+        <h4 class="mb-4">Send Instant Email Notification</h4>
+        <form id="sendEmailForm" method="post" onsubmit="setAction(event)" class="w-75 mx-auto shadow p-4 bg-light rounded">
+            <div class="form-group mb-3">
                 <label for="UserId" class="control-label fw-bold mb-1">User ID</label>
-                <input type="number" name="id" class="form-control mb-1" required />
+                <input type="number" name="id" class="form-control" required placeholder="User ID" />
             </div>
 
             @if (TempData["ErrorInstantNotify"] != null)
@@ -69,7 +71,7 @@
                 </div>
             }
             <div class="form-group">
-                <input type="submit" value="Instant Send Email" class="btn btn-primary btn-block mt-1" />
+                <input type="submit" value="Instant Send Email" class="btn btn-primary btn-block mt-2" />
             </div>
         </form>
     </div>
