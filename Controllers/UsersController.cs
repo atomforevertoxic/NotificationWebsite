@@ -55,51 +55,51 @@ namespace NotificationWebsite.Controllers
             {
                 case ServiceState.Success:
                     
-                    TempData["SuccessSubscription"] += "The user was successfully subscribed";
+                    TempData["SuccessSubscription"] = ServiceStateLogText.UserCreationSuccess;
                     
-                    _logger.LogInformation("User successfully subscribed.");
+                    _logger.LogInformation(ServiceStateLogText.UserCreationSuccess);
                     break;
 
                 case ServiceState.DuplicateMailError:
                     
-                    _logger.LogWarning("Attempt to subscribe a user with a duplicate email.");
+                    _logger.LogWarning(ServiceStateLogText.DuplicateEmailError);
                     
-                    TempData["ErrorSubscription"] = "The user with this email is already subscribed";
+                    TempData["ErrorSubscription"] = ServiceStateLogText.DuplicateEmailError;
                     break;
 
                 case ServiceState.DatabaseAccessError:
                     
-                    _logger.LogError("Database access error while subscribing a user.");
+                    _logger.LogError(ServiceStateLogText.DatabaseAccessError);
                     
-                    TempData["ErrorSubscription"] = "Database access error. User is not subscribed";
+                    TempData["ErrorSubscription"] = ServiceStateLogText.DatabaseAccessError;
                     break;
 
                 case ServiceState.UserSavingError:
                     
-                    _logger.LogError("Error saving user to database.");
+                    _logger.LogError(ServiceStateLogText.UserSavingError);
                     
-                    TempData["ErrorSubscription"] = "Error saving user to database. User is not subscribed";
+                    TempData["ErrorSubscription"] = ServiceStateLogText.UserSavingError;
                     break;
 
                 case ServiceState.ScheduleConfigurationError:
                     
-                    _logger.LogError("Error creating notification schedule for user.");
+                    _logger.LogError(ServiceStateLogText.ScheduleConfigurationError);
                     
-                    TempData["ErrorSubscription"] = "Error creating notification schedule. User is not subscribed";
+                    TempData["ErrorSubscription"] = ServiceStateLogText.ScheduleConfigurationError;
                     break;
 
                 case ServiceState.EmailSendingError:
 
-                    _logger.LogError("Error sending email to user during subscription.");
+                    _logger.LogError(ServiceStateLogText.EmailSendingError);
                     
-                    TempData["ErrorSubscription"] = "Error sending email. User is not subscribed";
+                    TempData["ErrorSubscription"] = ServiceStateLogText.EmailSendingError;
                     break;
 
                 case ServiceState.OtherError:
                     
-                    _logger.LogError("An unknown error occurred while subscribing the user.");
+                    _logger.LogError(ServiceStateLogText.OtherError);
 
-                    TempData["ErrorSubscription"] = "An unknown error occurred while subscribing the user. User is not subscribed";
+                    TempData["ErrorSubscription"] = ServiceStateLogText.OtherError;
                     break;
 
             }
@@ -118,7 +118,7 @@ namespace NotificationWebsite.Controllers
                 return NotFound("No users found");
             }
 
-            _logger.LogInformation("Returning {UserCount} users.", users.Count);
+            _logger.LogInformation("Returning ({UserCount}) users", users.Count);
             return Ok(users);
         }
 
@@ -126,12 +126,12 @@ namespace NotificationWebsite.Controllers
         [HttpPost("{id}/email")]
         public async Task<IActionResult> SendEmailInstantly(int id)
         {
-            _logger.LogInformation("Received request to send email instantly to user with ID {UserId}.", id);
+            _logger.LogInformation("Received request to send email instantly to user with ID ({UserId})", id);
 
             var user = await _userService.GetUserById(id);
             if (user == null)
             {
-                _logger.LogWarning("User with ID = ({UserId}) not found.", id);
+                _logger.LogWarning("User with ID = ({UserId}) not found", id);
 
                 TempData["ErrorInstantNotify"] = $"User with ID = ({id}) not found";
                 return Redirect("/");
@@ -139,16 +139,16 @@ namespace NotificationWebsite.Controllers
 
             try
             {
-                _logger.LogInformation("Sending instant email to user with ID {UserId}.", id);
+                _logger.LogInformation("Sending instant email to user with ID ({UserId})", id);
 
                 await _userService.InstantNotifyAsync(user);
-                _logger.LogInformation("User with ID {UserId} successfully received instant message.", id);
+                _logger.LogInformation("User with ID ({UserId}) successfully received instant message", id);
 
-                TempData["SuccessInstantNotify"] = $"User with ID {id} successfuly received instant message";
+                TempData["SuccessInstantNotify"] = $"User with ID ({id}) successfuly received instant message";
             }
             catch
             {
-                _logger.LogError("Error occurred while sending instant email to user with ID {UserId}.", id);
+                _logger.LogError("Error occurred while sending instant email to user with ID ({UserId})", id);
                 TempData["ErrorInstantNotify"] = "Error instant sending email";
             }
             return Redirect("/");
