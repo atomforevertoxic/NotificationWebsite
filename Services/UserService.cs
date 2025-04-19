@@ -12,6 +12,9 @@ namespace NotificationWebsite.Services
         Success,
         DuplicateMailError,
         DatabaseAccessError,
+        UserSavingError,
+        EmailSendingError,
+        ScheduleConfigurationError,
         OtherError
     }
 
@@ -42,6 +45,7 @@ namespace NotificationWebsite.Services
 
         public async Task<ServiceState> AddUserAsync(User user)
         {
+
             if (_context.Users != null)
             {
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
@@ -49,16 +53,42 @@ namespace NotificationWebsite.Services
                     return ServiceState.DuplicateMailError;
                 }
 
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
 
-                if (_context.Users.Count() == 1)
+
+                try
                 {
-                    ScheduleNotifications();
+                    await _context.Users.AddAsync(user);
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    return ServiceState.UserSavingError;
                 }
 
-                
-                await _emailService.SendTemplateEmailAsync(user, "Welcome", _notificationSettings.GreetTemplate);
+
+
+                try
+                {
+                    if (_context.Users.Count() == 1)
+                    {
+                        ScheduleNotifications();
+                    }
+                }
+                catch
+                {
+                    return ServiceState.ScheduleConfigurationError;
+                }
+
+
+
+                try
+                {
+                    await _emailService.SendTemplateEmailAsync(user, "Welcome", _notificationSettings.GreetTemplate);
+                }
+                catch
+                {
+                    return ServiceState.EmailSendingError;
+                }
 
                 return ServiceState.Success;
             }

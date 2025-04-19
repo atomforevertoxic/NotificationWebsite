@@ -62,7 +62,12 @@
                     @TempData["ErrorInstantNotify"]
                 </div>
             }
-
+            @if (TempData["SuccessInstantNotify"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessInstantNotify"]
+                </div>
+            }
             <div class="form-group">
                 <input type="submit" value="Instant Send Email" class="btn btn-primary btn-block mt-1" />
             </div>

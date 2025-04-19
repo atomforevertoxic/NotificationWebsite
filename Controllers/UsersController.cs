@@ -27,7 +27,6 @@ namespace NotificationWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromForm] User NewUser)
         {
-
             if (!ModelState.IsValid) //не уверен что эта проверка нужна т.к. форма уже валидируется...
             {
                 return ValidationProblem(ModelState);
@@ -57,6 +56,18 @@ namespace NotificationWebsite.Controllers
 
                 case ServiceState.DatabaseAccessError:
                     TempData["ErrorSubscription"] = "Database access error";
+                    break;
+
+                case ServiceState.UserSavingError:
+                    TempData["ErrorSubscription"] = "Error saving user to database";
+                    break;
+
+                case ServiceState.ScheduleConfigurationError:
+                    TempData["ErrorSubscription"] = "Error creating notification schedule";
+                    break;
+
+                case ServiceState.EmailSendingError:
+                    TempData["ErrorSubscription"] = "Error sending email";
                     break;
 
                 case ServiceState.OtherError:
@@ -89,8 +100,15 @@ namespace NotificationWebsite.Controllers
                 return Redirect("/");
             }
 
-            await _userService.InstantNotifyAsync(user); 
-
+            try
+            {
+                await _userService.InstantNotifyAsync(user);
+                TempData["SuccessInstantNotify"] = $"User with ID {id} successfuly received instant message";
+            }
+            catch
+            {
+                TempData["ErrorInstantNotify"] = "Error instant sending email";
+            }
             return Redirect("/");
         }
     }
