@@ -25,7 +25,7 @@ namespace NotificationWebsite.Controllers
 
 
         [HttpPost]
-        public IActionResult CreateUser([FromForm] User NewUser)
+        public async Task<IActionResult> CreateUser([FromForm] User NewUser)
         {
 
             if (!ModelState.IsValid) //не уверен что эта проверка нужна т.к. форма уже валидируется...
@@ -35,8 +35,9 @@ namespace NotificationWebsite.Controllers
 
             //если время не устанавливается, перезапусти сервер
             NewUser.Timestamp = DateTime.UtcNow; //время UTC т.к. нам важна лишь разница во времени
-            
-            ServiceState serviceRespond = _userService.AddUser(NewUser);
+
+
+            ServiceState serviceRespond = await _userService.AddUserAsync(NewUser);
             HandleSubscriptionServiceRespond(serviceRespond);
 
             return Redirect("/");
@@ -79,17 +80,16 @@ namespace NotificationWebsite.Controllers
 
 
         [HttpPost("{id}/email")]
-        public IActionResult SendEmailInstantly(int id)
+        public async Task<IActionResult> SendEmailInstantly(int id)
         {
-
-            var user = _userService.GetUserById(id);
+            var user = await _userService.GetUserById(id);
             if (user == null)
             {
                 TempData["ErrorInstantNotify"] = $"User with ID {id} not found";
-                return NotFound($"User with ID {id} not found");
+                return Redirect("/");
             }
 
-            _userService.InstantNotify(user);
+            await _userService.InstantNotifyAsync(user); 
 
             return Redirect("/");
         }

@@ -17,24 +17,25 @@ namespace NotificationWebsite.Services
         }
 
 
-        public void NotifySubscribers(IList<User> subscribers)
+        public async Task NotifySubscribersAsync(IList<User> subscribers)
         {
+            var tasks = new List<Task>(); 
             foreach (User subscriber in subscribers)
             {
-                SendTemplateEmail(subscriber, "Notification", _notificationSettings.RemindTemplate);
+                tasks.Add(SendTemplateEmailAsync(subscriber, "Notification", _notificationSettings.RemindTemplate));
             }
+            await Task.WhenAll(tasks); 
         }
 
-        public void SendTemplateEmail(User receiver, string subject, string templateFile)
+        public async Task SendTemplateEmailAsync(User receiver, string subject, string templateFile)
         {
-            string EmailTemplatePath = Directory.GetCurrentDirectory() + _notificationSettings.RelativePath + templateFile;
+            var emailTemplatePath = Directory.GetCurrentDirectory() + _notificationSettings.RelativePath + templateFile;
+            emailTemplatePath = emailTemplatePath.Replace('\\', Path.DirectorySeparatorChar);
 
-            EmailTemplatePath= EmailTemplatePath.Replace('\\', Path.DirectorySeparatorChar);
-
-            _fluentEmail.To(receiver.Email)
+            await _fluentEmail.To(receiver.Email)
                 .Subject(subject)
-                .UsingTemplateFromFile(EmailTemplatePath, receiver)
-                .Send();
+                .UsingTemplateFromFile(emailTemplatePath, receiver)
+                .SendAsync();
         }
     }
 }

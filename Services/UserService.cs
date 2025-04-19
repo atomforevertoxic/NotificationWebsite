@@ -2,6 +2,7 @@ using NotificationWebsite.Data;
 using NotificationWebsite.Models;
 using Hangfire;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace NotificationWebsite.Services
 {
@@ -39,28 +40,25 @@ namespace NotificationWebsite.Services
         }
 
 
-        public ServiceState AddUser(User user)
+        public async Task<ServiceState> AddUserAsync(User user)
         {
             if (_context.Users != null)
             {
-                if (_context.Users.Any(u => u.Email == user.Email))
+                if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 {
                     return ServiceState.DuplicateMailError;
                 }
 
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
 
-                _context.Users.Add(user);
-                _context.SaveChanges();
-
-
-                if (GetUsers().Count==1)
+                if (_context.Users.Count() == 1)
                 {
                     ScheduleNotifications();
                 }
 
-                //добавить обработчик ошибок
-                _emailService.SendTemplateEmail(user, "Welcome", _notificationSettings.GreetTemplate);
-
+                
+                await _emailService.SendTemplateEmailAsync(user, "Welcome", _notificationSettings.GreetTemplate);
 
                 return ServiceState.Success;
             }
@@ -68,35 +66,35 @@ namespace NotificationWebsite.Services
             return ServiceState.DatabaseAccessError;
         }
 
-        public User? GetUserById(int id)
+        public async Task<User?> GetUserById(int id)
         {
             if (_context == null) return null;
             else if (_context.Users == null || _context.Users.Count() == 0) return null;
 
-            return _context?.Users?.FirstOrDefault(user => user.Id == id);
+            return await _context.Users.FindAsync(id);
         }
 
         private void ScheduleNotifications()
         {
-            //добавить обработчик ошибок
-            RecurringJob.AddOrUpdate("Notification",
-                () => _emailService.NotifySubscribers(GetUsers()),
-                "* * * * *");
+            RecurringJob.AddOrUpdate(
+                "Notification",
+                () => NotifySubscribers(),
+                "* * * * *"
+            );
         }
 
-        public void InstantNotify(User receiver)
+        public async Task NotifySubscribers()
         {
-            try
-            {
-                _emailService.SendTemplateEmail(
-                    receiver,
-                    "Notify",
-                    _notificationSettings.RemindTemplate);
-            }
-            catch(Exception ex)
-            {
+            var users = GetUsers(); 
+            await _emailService.NotifySubscribersAsync(users);
+        }
 
-            }
+        public async Task InstantNotifyAsync(User receiver)
+        {
+            await _emailService.SendTemplateEmailAsync(
+                receiver,
+                "Instant Notification",
+                _notificationSettings.RemindTemplate);
         }
     }
 }
