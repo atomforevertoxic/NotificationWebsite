@@ -37,12 +37,12 @@ namespace NotificationWebsite.Controllers
             NewUser.Timestamp = DateTime.UtcNow; //время UTC т.к. нам важна лишь разница во времени
             
             ServiceState serviceRespond = _userService.AddUser(NewUser);
-            HandleServiceRespond(serviceRespond);
+            HandleSubscriptionServiceRespond(serviceRespond);
 
             return Redirect("/");
         }
 
-        private void HandleServiceRespond(ServiceState respond)
+        private void HandleSubscriptionServiceRespond(ServiceState respond)
         {
             switch(respond)
             {
@@ -85,7 +85,8 @@ namespace NotificationWebsite.Controllers
             var user = _userService.GetUserById(id);
             if (user == null)
             {
-                return NotFound($"User with ID {id} not found.");
+                TempData["ErrorInstantNotify"] = $"User with ID {id} not found";
+                return NotFound($"User with ID {id} not found");
             }
 
             _userService.InstantNotify(user);

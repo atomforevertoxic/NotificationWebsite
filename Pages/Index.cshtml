@@ -47,9 +47,38 @@
             <input type="submit" value="Subscribe" class="btn btn-primary btn-block mt-1" /> 
         </div>
     </form>
+
+    <div class="text-center my-5">
+        <h3>Send Instant Email Notification</h3>
+        <form id="sendEmailForm" method="post" onsubmit="setAction(event)">
+            <div class="form-group mb-2">
+                <label for="UserId" class="control-label fw-bold mb-1">User ID</label>
+                <input type="number" name="id" class="form-control mb-1" required />
+            </div>
+
+            @if (TempData["ErrorInstantNotify"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorInstantNotify"]
+                </div>
+            }
+
+            <div class="form-group">
+                <input type="submit" value="Instant Send Email" class="btn btn-primary btn-block mt-1" />
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts
 {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function setAction(event) {
+            const form = document.getElementById('sendEmailForm');
+            const id = form.querySelector('input[name="id"]').value;
+            form.action = `/api/users/${id}/email`;
+        }
+    </script>
 }

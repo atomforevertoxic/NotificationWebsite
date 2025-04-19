@@ -86,10 +86,17 @@ namespace NotificationWebsite.Services
 
         public void InstantNotify(User receiver)
         {
-            _emailService.SendTemplateEmail(
-                receiver, 
-                "Notify",
-                _notificationSettings.RemindTemplate);
+            try
+            {
+                _emailService.SendTemplateEmail(
+                    receiver,
+                    "Notify",
+                    _notificationSettings.RemindTemplate);
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
     }
 }
