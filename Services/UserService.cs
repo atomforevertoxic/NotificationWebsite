@@ -54,20 +54,6 @@ namespace NotificationWebsite.Services
                     return ServiceState.DuplicateMailError;
                 }
 
-
-
-                try
-                {
-                    await _context.Users.AddAsync(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch
-                {
-                    return ServiceState.UserSavingError;
-                }
-
-
-
                 try
                 {
                     if (_context.Users.Count() == 1)
@@ -84,14 +70,23 @@ namespace NotificationWebsite.Services
 
                 try
                 {
-                    await _emailService.SendTemplateEmailAsync(user, "Welcome", _notificationSettings.GreetTemplate);
+                    await _emailService.SendTemplateEmailAsync(user, "Welcome", _notificationSettings.GreetTemplate); 
                 }
                 catch
                 {
                     return ServiceState.EmailSendingError;
                 }
 
-                return ServiceState.Success;
+                try
+                {
+                    await _context.Users.AddAsync(user);
+                    await _context.SaveChangesAsync();
+                    return ServiceState.Success;
+                }
+                catch
+                {
+                    return ServiceState.UserSavingError;
+                }
             }
 
             return ServiceState.DatabaseAccessError;

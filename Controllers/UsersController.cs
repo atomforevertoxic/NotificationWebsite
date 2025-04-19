@@ -55,23 +55,23 @@ namespace NotificationWebsite.Controllers
                     break;
 
                 case ServiceState.DatabaseAccessError:
-                    TempData["ErrorSubscription"] = "Database access error";
+                    TempData["ErrorSubscription"] = "Database access error. User is not subscribed";
                     break;
 
                 case ServiceState.UserSavingError:
-                    TempData["ErrorSubscription"] = "Error saving user to database";
+                    TempData["ErrorSubscription"] = "Error saving user to database. User is not subscribed";
                     break;
 
                 case ServiceState.ScheduleConfigurationError:
-                    TempData["ErrorSubscription"] = "Error creating notification schedule";
+                    TempData["ErrorSubscription"] = "Error creating notification schedule. User is not subscribed";
                     break;
 
                 case ServiceState.EmailSendingError:
-                    TempData["ErrorSubscription"] = "Error sending email";
+                    TempData["ErrorSubscription"] = "Error sending email. User is not subscribed";
                     break;
 
                 case ServiceState.OtherError:
-                    TempData["ErrorSubscription"] = "An unknown error occurred while subscribing the user";
+                    TempData["ErrorSubscription"] = "An unknown error occurred while subscribing the user. User is not subscribed";
                     break;
 
             }
