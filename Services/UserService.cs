@@ -3,6 +3,8 @@ using NotificationWebsite.Models;
 using Hangfire;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace NotificationWebsite.Services
 {
@@ -45,7 +47,6 @@ namespace NotificationWebsite.Services
 
         public async Task<ServiceState> AddUserAsync(User user)
         {
-
             if (_context.Users != null)
             {
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
@@ -109,7 +110,7 @@ namespace NotificationWebsite.Services
             RecurringJob.AddOrUpdate(
                 "Notification",
                 () => NotifySubscribers(),
-                "* * * * *"
+                _notificationSettings.Cron
             );
         }
 
