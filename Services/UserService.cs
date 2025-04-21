@@ -9,18 +9,6 @@ using NotificationWebsite.Controllers;
 
 namespace NotificationWebsite.Services
 {
-
-    public enum ServiceState
-    {
-        Success,
-        DuplicateMailError,
-        DatabaseAccessError,
-        UserSavingError,
-        EmailSendingError,
-        ScheduleConfigurationError,
-        OtherError
-    }
-
     public class UserService
     {
         private readonly WebDbContext _context = default!;
