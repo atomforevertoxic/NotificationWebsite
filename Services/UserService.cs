@@ -49,13 +49,14 @@ namespace NotificationWebsite.Services
         }
 
 
-        public async Task<ServiceState> AddUserAsync(User user)
+        public async Task<(string Message, bool IsSuccess)> AddUserAsync(User user)
         {
-            if (_context.Users != null)
+            if (_context!=null && _context.Users != null)
             {
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 {
-                    return ServiceState.DuplicateMailError;
+                    _logger.LogError($"{ServiceStateLogText.DuplicateEmailError}");
+                    return (ServiceStateLogText.DuplicateEmailError, false);
                 }
 
 
@@ -64,9 +65,10 @@ namespace NotificationWebsite.Services
                     await _context.Users.AddAsync(user);
                     await _context.SaveChangesAsync();
                 }
-                catch
+                catch(Exception ex)
                 {
-                    return ServiceState.UserSavingError;
+                    _logger.LogError($"{ServiceStateLogText.UserSavingError}\n{ex.Message}");
+                    return (ServiceStateLogText.UserSavingError, false);
                 }
 
                 try
@@ -77,9 +79,10 @@ namespace NotificationWebsite.Services
                         ScheduleNotifications();
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
-                    return ServiceState.ScheduleConfigurationError;
+                    _logger.LogError($"{ServiceStateLogText.ScheduleConfigurationError}\n{ex.Message}");
+                    return (ServiceStateLogText.ScheduleConfigurationError, false);
                 }
 
                 try
@@ -87,16 +90,19 @@ namespace NotificationWebsite.Services
                     _logger.LogInformation("Sending welcome email to new user with email: {Email}.", user.Email);
                     await _emailService.SendTemplateEmailAsync(user, "Welcome", _notificationSettings.GreetTemplate); 
                 }
-                catch
+                catch(Exception ex)
                 {
-                    return ServiceState.EmailSendingError;
+                    _logger.LogError($"{ServiceStateLogText.EmailSendingError}\n{ex.Message}");
+                    return (ServiceStateLogText.EmailSendingError, false);
                 }
 
 
-                return ServiceState.Success;
+                _logger.LogInformation(ServiceStateLogText.UserCreationSuccess);
+                return (ServiceStateLogText.UserCreationSuccess, true);
             }
 
-            return ServiceState.DatabaseAccessError;
+            _logger.LogError($"{ServiceStateLogText.DatabaseAccessError}");
+            return (ServiceStateLogText.DatabaseAccessError, false);
         }
 
         public async Task<User?> GetUserById(int id)

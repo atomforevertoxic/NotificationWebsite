@@ -41,68 +41,17 @@ namespace NotificationWebsite.Controllers
             newUser.Timestamp = DateTime.UtcNow; //время UTC т.к. нам важна лишь разница во времени
 
 
-            ServiceState serviceRespond = await _userService.AddUserAsync(newUser);
-            _logger.LogInformation("User creation process completed for {@Email} with response: {Response}", newUser.Email, serviceRespond);
-
-            HandleSubscriptionServiceRespond(serviceRespond);
+            var (message, isSuccess) = await _userService.AddUserAsync(newUser);
+            if (isSuccess)
+            {
+                TempData["SuccessSubscription"] = message;
+            }
+            else
+            {
+                TempData["ErrorSubscription"] = message;
+            }
 
             return Redirect("/");
-        }
-
-        private void HandleSubscriptionServiceRespond(ServiceState respond)
-        {
-            switch(respond)
-            {
-                case ServiceState.Success:
-                    
-                    TempData["SuccessSubscription"] = ServiceStateLogText.UserCreationSuccess;
-                    
-                    _logger.LogInformation(ServiceStateLogText.UserCreationSuccess);
-                    break;
-
-                case ServiceState.DuplicateMailError:
-                    
-                    _logger.LogWarning(ServiceStateLogText.DuplicateEmailError);
-                    
-                    TempData["ErrorSubscription"] = ServiceStateLogText.DuplicateEmailError;
-                    break;
-
-                case ServiceState.DatabaseAccessError:
-                    
-                    _logger.LogError(ServiceStateLogText.DatabaseAccessError);
-                    
-                    TempData["ErrorSubscription"] = ServiceStateLogText.DatabaseAccessError;
-                    break;
-
-                case ServiceState.UserSavingError:
-                    
-                    _logger.LogError(ServiceStateLogText.UserSavingError);
-                    
-                    TempData["ErrorSubscription"] = ServiceStateLogText.UserSavingError;
-                    break;
-
-                case ServiceState.ScheduleConfigurationError:
-                    
-                    _logger.LogError(ServiceStateLogText.ScheduleConfigurationError);
-                    
-                    TempData["ErrorSubscription"] = ServiceStateLogText.ScheduleConfigurationError;
-                    break;
-
-                case ServiceState.EmailSendingError:
-
-                    _logger.LogError(ServiceStateLogText.EmailSendingError);
-                    
-                    TempData["ErrorSubscription"] = ServiceStateLogText.EmailSendingError;
-                    break;
-
-                case ServiceState.OtherError:
-                    
-                    _logger.LogError(ServiceStateLogText.OtherError);
-
-                    TempData["ErrorSubscription"] = ServiceStateLogText.OtherError;
-                    break;
-
-            }
         }
 
 
